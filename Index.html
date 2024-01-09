@@ -3,7 +3,10 @@
 <head>
   <title>Address List</title>
   <style>
-    ol {
+    #addressList {
+      color: black;
+    }
+    #routeOrder {
       color: blue;
     }
   </style>
@@ -23,11 +26,14 @@
 
   <ol id="addressList"></ol>
 
+  <ol id="routeOrder"></ol>
+
   <div id="routeInfo"></div>
 
   <script src="https://www.bing.com/api/maps/mapcontrol?key=AgJByZBI9tU_t6bMrFcSycB-RNlS8uCQcMQssXD8TH7czDq0plnAu9pDXEePtU6W&callback=loadMapScenario" async defer></script>
   <script>
-    var addresses = [];
+    var givenAddresses = [];
+    var routeOrder = [];
 
     function addAddress() {
       var address = document.getElementById("address").value;
@@ -35,7 +41,7 @@
       var li = document.createElement("li");
       li.appendChild(document.createTextNode(address));
       addressList.appendChild(li);
-      addresses.push(address);
+      givenAddresses.push(address);
       document.getElementById("address").value = "";
     }
 
@@ -48,8 +54,8 @@
       var waypointList = new Microsoft.Maps.Directions.WaypointList();
 
       waypointList.push(new Microsoft.Maps.Directions.Waypoint({ address: start }));
-      for (var i = 0; i < addresses.length; i++) {
-        waypointList.push(new Microsoft.Maps.Directions.Waypoint({ address: addresses[i] }));
+      for (var i = 0; i < givenAddresses.length; i++) {
+        waypointList.push(new Microsoft.Maps.Directions.Waypoint({ address: givenAddresses[i] }));
       }
       waypointList.push(new Microsoft.Maps.Directions.Waypoint({ address: end }));
 
@@ -73,25 +79,20 @@
           return Microsoft.Maps.SpatialMath.getDistanceTo(startLocation, location) + Microsoft.Maps.SpatialMath.getDistanceTo(endLocation, location);
         });
 
-        var sortedAddresses = addresses.slice().sort(function (a, b) {
-          var indexA = addresses.indexOf(a);
-          var indexB = addresses.indexOf(b);
+        routeOrder = givenAddresses.slice().sort(function (a, b) {
+          var indexA = givenAddresses.indexOf(a);
+          var indexB = givenAddresses.indexOf(b);
           return distances[indexA] - distances[indexB];
         });
 
-        var ol = document.getElementById("addressList");
+        var ol = document.getElementById("routeOrder");
         ol.innerHTML = "";
-        for (var i = 0; i < sortedAddresses.length; i++) {
+        for (var i = 0; i < routeOrder.length; i++) {
           var li = document.createElement("li");
-          li.appendChild(document.createTextNode((i + 1) + ". " + sortedAddresses[i].formattedAddress));
+          li.appendChild(document.createTextNode((i + 1) + ". " + routeOrder[i]));
           ol.appendChild(li);
         }
 
         directionsManager.calculateDirections({
           successCallback: function (result) {
-            var routeSummary = result.routes[0].routeSummary;
-            var distance = routeSummary.distance.toFixed(2);
-            var time = routeSummary.travelTime.toFixed(2);
-            var routeInfo = document.getElementById("routeInfo");
-            routeInfo.innerHTML = "Estimated route distance: " + distance +
-            " miles. Estimated travel time: "
+            var routeSummary = result.routes[0].
