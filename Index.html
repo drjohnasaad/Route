@@ -77,10 +77,9 @@
 
   <div id="routeInfo"></div>
 
-  <script src="https://www.bing.com/api/maps/mapcontrol?key=AgJByZBI9tU_t6bMrFcSycB-RNlS8uCQcMQssXD8TH7czDq0plnAu9pDXEePtU6W" async defer></script>
+  <script src="https://www.bing.com/api/maps/mapcontrol?key=AgJByZBI9tU_t6bMrFcSycB-RNlS8uCQcMQssXD8TH7czDq0plnAu9pDXEePtU6W&callback=loadMapScenario" async defer></script>
   <script>
     var givenAddresses = [];
-    var routeOrder = [];
 
     function addAddress() {
       var address = document.getElementById("address").value;
@@ -120,5 +119,55 @@
         });
 
         var startLocation = new Microsoft.Maps.Location(waypointList.get(0).latitude, waypointList.get(0).longitude);
-        var endLocation = new Microsoft.Maps.Location(waypointList.get(waypointList.getLength() - 1).latitude, waypointList.get(waypointList.getLength() -
-[user
+        var endLocation = new Microsoft.Maps.Location(waypointList.get(waypointList.getLength() - 1).latitude, waypointList.get(waypointList.getLength() - 1).longitude);
+
+        var distances = locations.map(function (location) {
+          return Microsoft.Maps.SpatialMath.getDistanceTo(startLocation, location) + Microsoft.Maps.SpatialMath.getDistanceTo(endLocation, location);
+        });
+
+        routeOrder = givenAddresses.slice().sort(function (a, b) {
+          var indexA = givenAddresses.indexOf(a);
+          var indexB = givenAddresses.indexOf(b);
+          return distances[indexA] - distances[indexB];
+        });
+
+        var ol = document.getElementById("routeOrder");
+        ol.innerHTML = "";
+        for (var i = 0; i < routeOrder.length; i++) {
+          var li = document.createElement("li");
+          li.appendChild(document.createTextNode((i + 1) + ". " + routeOrder[i].formattedAddress));
+          ol.appendChild(li);
+        }
+
+        directionsManager.calculateDirections({
+          successCallback: function (result) {
+            var routeSummary = result.routes[0].routeSummary;
+            var distance = routeSummary.distance.toFixed(2);
+            var time = routeSummary.travelTime.toFixed(2);
+            var routeInfo = document.getElementById("routeInfo");
+            routeInfo.innerHTML = "Estimated route distance: " + distance +
+            " miles. Estimated travel time: " + time + " minutes.";
+          }
+        });
+      });
+    }
+
+// Add this code to handle errors
+    window.onerror = function(msg, url, lineNo, columnNo, error) {
+      var message = [
+        'Message: ' + msg,
+        'URL: ' + url,
+        'Line: ' + lineNo,
+        'Column: ' + columnNo,
+        'Error object: ' + JSON.stringify(error)
+      ].join(' - ');
+
+      alert(message);
+
+      return false;
+    };
+
+
+  </script>
+</body>
+</html>
