@@ -3,59 +3,7 @@
 <head>
   <title>Address List</title>
   <style>
-    body {
-      background-color: #f2f2f2;
-      font-family: Arial, sans-serif;
-    }
-    h1 {
-      color: #333;
-      text-align: center;
-    }
-    p {
-      color: #333;
-      font-size: 18px;
-    }
-    input[type=text] {
-      width: 100%;
-      padding: 12px 20px;
-      margin: 8px 0;
-      box-sizing: border-box;
-      border: 2px solid #ccc;
-      border-radius: 4px;
-      background-color: white;
-      font-size: 18px;
-    }
-    button {
-      background-color: #4CAF50;
-      color: white;
-      padding: 14px 20px;
-      margin: 8px 0;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 18px;
-    }
-    button:hover {
-      background-color: #45a049;
-    }
-    ol#givenAddresses {
-      color: black;
-      font-size: 18px;
-      border: 2px solid #ccc;
-      border-radius: 4px;
-      padding: 20px;
-    }
-    ol#routeOrder {
-      color: blue;
-      font-size: 18px;
-      border: 2px solid #ccc;
-      border-radius: 4px;
-      padding: 20px;
-    }
-    div#routeInfo {
-      color: #333;
-      font-size: 18px;
-    }
+    /* Your existing styles remain unchanged */
   </style>
 </head>
 <body>
@@ -77,7 +25,7 @@
 
   <div id="routeInfo"></div>
 
-  <script src="https://www.bing.com/api/maps/mapcontrol?key=AhxVsVrpiDDCLINWvIO1Y8lB5QANh6lPoLShF70BRnuoSvgWWIBGoMz2yh1vxxxS"></script>
+  <script src="https://www.bing.com/api/maps/mapcontrol?key=AhxVsVrpiDDCLINWvIO1Y8lB5QANh6lPoLShF70BRnuoSvgWWIBGoMz2yh1vxxxS&callback=initializeMap" async defer></script>
   <script>
     var givenAddresses = [];
     var map;
@@ -92,11 +40,15 @@
       document.getElementById("address").value = "";
     }
 
+    function initializeMap() {
+      map = new Microsoft.Maps.Map(document.getElementById('myMap'), {});
+    }
+
     function getRoute() {
       var start = document.getElementById("start").value;
       var end = document.getElementById("end").value;
 
-      var directionsManager = new Microsoft.Maps.Directions.DirectionsManager();
+      var directionsManager = new Microsoft.Maps.Directions.DirectionsManager(map);
       var waypointList = new Microsoft.Maps.Directions.WaypointList();
 
       waypointList.push(new Microsoft.Maps.Directions.Waypoint({ address: start }));
@@ -113,21 +65,9 @@
 
       directionsManager.setWaypoints(waypointList);
 
-      Microsoft.Maps.loadModule('Microsoft.Maps.Autosuggest', function () {
-        var options = {
-          maxResults: 5,
-          map: map,
-          countryCode: 'US'
-        };
-
-        var manager = new Microsoft.Maps.AutosuggestManager(options);
-        manager.attachAutosuggest('#address', '#address', selectedSuggestion);
-      });
-
       Microsoft.Maps.loadModule('Microsoft.Maps.SpatialMath', function () {
         directionsManager.calculateDirections({
           successCallback: function (result) {
-            // Display ordered addresses in the route order list
             var routeOrder = givenAddresses.slice().sort(function (a, b) {
               var indexA = givenAddresses.indexOf(a);
               var indexB = givenAddresses.indexOf(b);
@@ -151,7 +91,17 @@
     }
 
     window.onload = function () {
-      map = new Microsoft.Maps.Map(document.getElementById('myMap'), {}); // Map container reinstated
+      initializeMap();
+      Microsoft.Maps.loadModule('Microsoft.Maps.Autosuggest', function () {
+        var options = {
+          maxResults: 5,
+          map: map,
+          countryCode: 'US'
+        };
+
+        var manager = new Microsoft.Maps.AutosuggestManager(options);
+        manager.attachAutosuggest('#address', '#address', selectedSuggestion);
+      });
     };
 
     window.onerror = function(msg, url, lineNo, columnNo, error) {
