@@ -113,4 +113,5 @@
           return new Microsoft.Maps.Location(waypoint.latitude, waypoint.longitude);
         });
 
-        var startLocation = new Microsoft.Maps.Location(waypointList.get(0).latitude, waypointList.get(
+        var startLocation = new Microsoft.Maps.Location(waypointList.get(0).latitude, waypointList.get(0).longitude);
+        var endLocation = new Microsoft.Maps.Location(waypointList.get(waypointList.getLength() - 1).latitude, waypointList.get(waypointList.getLength() -
