@@ -9,7 +9,7 @@
   <input type="text" id="address" placeholder="Enter an address" autocomplete="on">
   <button onclick="addAddress()">Add</button>
 
-  <ul id="addressList"></ul>
+  <ol id="addressList"></ol>
 
   <p>Type a starting address and an ending address below:</p>
   <div>
@@ -80,9 +80,25 @@
         waypointList.push(new Microsoft.Maps.Directions.Waypoint({ address: end }));
 
         directionsManager.calculateDirections();
+
+        var ol = document.getElementById("addressList");
+        ol.innerHTML = "";
+        var li = document.createElement("li");
+        li.appendChild(document.createTextNode(start));
+        ol.appendChild(li);
+        for (var i = 0; i < sortedAddresses.length; i++) {
+          var li = document.createElement("li");
+          li.appendChild(document.createTextNode(sortedAddresses[i]));
+          ol.appendChild(li);
+        }
+        var li = document.createElement("li");
+        li.appendChild(document.createTextNode(end));
+        ol.appendChild(li);
+        var items = ol.getElementsByTagName("li");
+        for (var i = 0; i < items.length; i++) {
+          items[i].innerHTML = (i + 1) + ". " + items[i].innerHTML;
+        }
       });
     }
   </script>
-  <div id="myMap" style="position:relative;width:600px;height:400px;"></div>
-</body>
-</html>
+  <div id
