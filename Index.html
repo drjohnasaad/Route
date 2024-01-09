@@ -2,6 +2,11 @@
 <html>
 <head>
   <title>Address List</title>
+  <style>
+    ol {
+      color: blue;
+    }
+  </style>
 </head>
 <body>
   <h1>Address List</h1>
@@ -78,7 +83,7 @@
         ol.innerHTML = "";
         for (var i = 0; i < sortedAddresses.length; i++) {
           var li = document.createElement("li");
-          li.appendChild(document.createTextNode((i + 1) + ". " + sortedAddresses[i]));
+          li.appendChild(document.createTextNode((i + 1) + ". " + sortedAddresses[i].formattedAddress));
           ol.appendChild(li);
         }
 
@@ -89,9 +94,4 @@
             var time = routeSummary.travelTime.toFixed(2);
             var routeInfo = document.getElementById("routeInfo");
             routeInfo.innerHTML = "Estimated route distance: " + distance +
-            " miles. Estimated travel time: " + time + " minutes.";
-          }
-        });
-      });
-    }
-  </script
+            " miles. Estimated travel time: "
