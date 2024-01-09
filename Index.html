@@ -83,22 +83,14 @@
 
         var ol = document.getElementById("addressList");
         ol.innerHTML = "";
-        var li = document.createElement("li");
-        li.appendChild(document.createTextNode(start));
-        ol.appendChild(li);
-        for (var i = 0; i < sortedAddresses.length; i++) {
+        for (var i = 0; i < waypointList.getLength(); i++) {
           var li = document.createElement("li");
-          li.appendChild(document.createTextNode(sortedAddresses[i]));
+          li.appendChild(document.createTextNode((i + 1) + ". " + waypointList.get(i).getAddress().formattedAddress));
           ol.appendChild(li);
-        }
-        var li = document.createElement("li");
-        li.appendChild(document.createTextNode(end));
-        ol.appendChild(li);
-        var items = ol.getElementsByTagName("li");
-        for (var i = 0; i < items.length; i++) {
-          items[i].innerHTML = (i + 1) + ". " + items[i].innerHTML;
         }
       });
     }
   </script>
-  <div id
+  <div id="myMap" style="position:relative;width:600px;height:400px;"></div>
+</body>
+</html>
