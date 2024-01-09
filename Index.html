@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Address List</title>
+</head>
+<body>
+  <h1>Address List</h1>
+  <p>Type an address below:</p>
+  <input type="text" id="address" placeholder="Enter an address" autocomplete="on">
+  <button onclick="addAddress()">Add</button>
+
+  <ul id="addressList"></ul>
+
+  <p>Type a starting address and an ending address below:</p>
+  <div>
+    <input type="text" id="start" placeholder="Starting address" autocomplete="on">
+    <input type="text" id="end" placeholder="Ending address" autocomplete="on">
+    <button onclick="getRoute()">Get Route</button>
+  </div>
+
+  <script src="https://www.bing.com/api/maps/mapcontrol?key=YOUR_BING_MAPS_API_KEY"></script>
+  <script>
+    var addresses = [];
+
+    function addAddress() {
+      var address = document.getElementById("address").value;
+      var addressList = document.getElementById("addressList");
+      var li = document.createElement("li");
+      li.appendChild(document.createTextNode(address));
+      addressList.appendChild(li);
+      addresses.push(address);
+      document.getElementById("address").value = "";
+    }
+
+    function getRoute() {
+      var start = document.getElementById("start").value;
+      var end = document.getElementById("end").value;
+
+      var map = new Microsoft.Maps.Map('#myMap', {});
+      var directionsManager = new Microsoft.Maps.Directions.DirectionsManager(map);
+      var waypointList = new Microsoft.Maps.Directions.WaypointList();
+
+      waypointList.push(new Microsoft.Maps.Directions.Waypoint({ address: start }));
+      for (var i = 0; i < addresses.length; i++) {
+        waypointList.push(new Microsoft.Maps.Directions.Waypoint({ address: addresses[i] }));
+      }
+      waypointList.push(new Microsoft.Maps.Directions.Waypoint({ address: end }));
+
+      directionsManager.setRequestOptions({
+        routeMode: Microsoft.Maps.Directions.RouteMode.driving,
+        routeDraggable: false,
+        optimizeWaypoints: true
+      });
+
+      directionsManager.setWaypoints(waypointList);
+      directionsManager.calculateDirections();
+    }
+  </script>
+  <div id="myMap" style="position:relative;width:600px;height:400px;"></div>
+</body>
+</html>
