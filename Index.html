@@ -53,7 +53,34 @@
       });
 
       directionsManager.setWaypoints(waypointList);
-      directionsManager.calculateDirections();
+
+      Microsoft.Maps.loadModule('Microsoft.Maps.SpatialMath', function () {
+        var locations = waypointList.toArray().map(function (waypoint) {
+          return new Microsoft.Maps.Location(waypoint.latitude, waypoint.longitude);
+        });
+
+        var startLocation = new Microsoft.Maps.Location(waypointList.get(0).latitude, waypointList.get(0).longitude);
+        var endLocation = new Microsoft.Maps.Location(waypointList.get(waypointList.getLength() - 1).latitude, waypointList.get(waypointList.getLength() - 1).longitude);
+
+        var distances = locations.map(function (location) {
+          return Microsoft.Maps.SpatialMath.getDistanceTo(startLocation, location) + Microsoft.Maps.SpatialMath.getDistanceTo(endLocation, location);
+        });
+
+        var sortedAddresses = addresses.slice().sort(function (a, b) {
+          var indexA = addresses.indexOf(a);
+          var indexB = addresses.indexOf(b);
+          return distances[indexA] - distances[indexB];
+        });
+
+        waypointList.clear();
+        waypointList.push(new Microsoft.Maps.Directions.Waypoint({ address: start }));
+        for (var i = 0; i < sortedAddresses.length; i++) {
+          waypointList.push(new Microsoft.Maps.Directions.Waypoint({ address: sortedAddresses[i] }));
+        }
+        waypointList.push(new Microsoft.Maps.Directions.Waypoint({ address: end }));
+
+        directionsManager.calculateDirections();
+      });
     }
   </script>
   <div id="myMap" style="position:relative;width:600px;height:400px;"></div>
