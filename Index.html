@@ -3,11 +3,52 @@
 <head>
   <title>Address List</title>
   <style>
-    #addressList {
-      color: black;
+    body {
+      background-color: #f2f2f2;
+      font-family: Arial, sans-serif;
     }
-    #routeOrder {
+    h1 {
+      color: #333;
+      text-align: center;
+    }
+    p {
+      color: #333;
+      font-size: 18px;
+    }
+    input[type=text] {
+      width: 100%;
+      padding: 12px 20px;
+      margin: 8px 0;
+      box-sizing: border-box;
+      border: 2px solid #ccc;
+      border-radius: 4px;
+      background-color: white;
+      font-size: 18px;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 14px 20px;
+      margin: 8px 0;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 18px;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    ol#givenAddresses {
+      color: black;
+      font-size: 18px;
+    }
+    ol#routeOrder {
       color: blue;
+      font-size: 18px;
+    }
+    div#routeInfo {
+      color: #333;
+      font-size: 18px;
     }
   </style>
 </head>
@@ -17,14 +58,14 @@
   <input type="text" id="address" placeholder="Enter an address" autocomplete="on">
   <button onclick="addAddress()">Add</button>
 
+  <ol id="givenAddresses"></ol>
+
   <p>Type a starting address and an ending address below:</p>
   <div>
     <input type="text" id="start" placeholder="Starting address" autocomplete="on">
     <input type="text" id="end" placeholder="Ending address" autocomplete="on">
     <button onclick="getRoute()">Get Route</button>
   </div>
-
-  <ol id="addressList"></ol>
 
   <ol id="routeOrder"></ol>
 
@@ -37,7 +78,7 @@
 
     function addAddress() {
       var address = document.getElementById("address").value;
-      var addressList = document.getElementById("addressList");
+      var addressList = document.getElementById("givenAddresses");
       var li = document.createElement("li");
       li.appendChild(document.createTextNode(address));
       addressList.appendChild(li);
@@ -72,27 +113,4 @@
           return new Microsoft.Maps.Location(waypoint.latitude, waypoint.longitude);
         });
 
-        var startLocation = new Microsoft.Maps.Location(waypointList.get(0).latitude, waypointList.get(0).longitude);
-        var endLocation = new Microsoft.Maps.Location(waypointList.get(waypointList.getLength() - 1).latitude, waypointList.get(waypointList.getLength() - 1).longitude);
-
-        var distances = locations.map(function (location) {
-          return Microsoft.Maps.SpatialMath.getDistanceTo(startLocation, location) + Microsoft.Maps.SpatialMath.getDistanceTo(endLocation, location);
-        });
-
-        routeOrder = givenAddresses.slice().sort(function (a, b) {
-          var indexA = givenAddresses.indexOf(a);
-          var indexB = givenAddresses.indexOf(b);
-          return distances[indexA] - distances[indexB];
-        });
-
-        var ol = document.getElementById("routeOrder");
-        ol.innerHTML = "";
-        for (var i = 0; i < routeOrder.length; i++) {
-          var li = document.createElement("li");
-          li.appendChild(document.createTextNode((i + 1) + ". " + routeOrder[i]));
-          ol.appendChild(li);
-        }
-
-        directionsManager.calculateDirections({
-          successCallback: function (result) {
-            var routeSummary = result.routes[0].
+        var startLocation = new Microsoft.Maps.Location(waypointList.get(0).latitude, waypointList.get(
