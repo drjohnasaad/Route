@@ -78,7 +78,6 @@
 
   <div id="routeInfo"></div>
 
-  <script src="https://maps.openrouteservice.org/assets/js/ors-js-client.js"></script>
   <script>
     var givenAddresses = [];
     var orsClient;
@@ -98,7 +97,7 @@
       var start = document.getElementById("start").value;
       var end = document.getElementById("end").value;
 
-      orsClient = new OpenRouteService.Client({ key:'5b3ce3597851110001cf624890270b75be3144bea8764bf3d5915a6b' }); // Replace 'YOUR_API_KEY' with your actual API key
+      orsClient = new OpenRouteService.Client({ key: '5b3ce3597851110001cf624890270b75be3144bea8764bf3d5915a6b' }); // Replace 'YOUR_API_KEY' with your actual API key
 
       var waypoints = givenAddresses.map(function (address) {
         return { lat: null, lon: null, name: address };
@@ -141,6 +140,8 @@
       clearSuggestions("addressSuggestions");
 
       if (input.trim() !== "") {
+        orsClient = new OpenRouteService.Client({ key: 'YOUR_API_KEY' }); // Replace 'YOUR_API_KEY' with your actual API key
+
         orsClient.geocode({ text: input })
           .then(function (data) {
             displaySuggestions("addressSuggestions", data.features);
