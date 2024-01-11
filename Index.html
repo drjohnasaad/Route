@@ -58,7 +58,8 @@
   
   <div>
     <label for="address">Type an address below:</label>
-    <input type="text" id="address" placeholder="Enter an address" autocomplete="on">
+    <input type="text" id="address" placeholder="Enter an address" autocomplete="off" oninput="suggestAddresses(this.value)">
+    <ul id="addressSuggestions"></ul>
     <button onclick="addAddress()">Add</button>
   </div>
 
@@ -66,9 +67,10 @@
 
   <div>
     <label for="start">Type a starting address:</label>
-    <input type="text" id="start" placeholder="Starting address" autocomplete="on">
+    <input type="text" id="start" placeholder="Starting address" autocomplete="off" oninput="suggestAddresses(this.value)">
     <label for="end">Type an ending address:</label>
-    <input type="text" id="end" placeholder="Ending address" autocomplete="on">
+    <input type="text" id="end" placeholder="Ending address" autocomplete="off" oninput="suggestAddresses(this.value)">
+    <ul id="routeSuggestions"></ul>
     <button onclick="getRoute()">Get Route</button>
   </div>
 
@@ -89,13 +91,14 @@
       addressList.appendChild(li);
       givenAddresses.push(address);
       document.getElementById("address").value = "";
+      clearSuggestions("addressSuggestions");
     }
 
     function getRoute() {
       var start = document.getElementById("start").value;
       var end = document.getElementById("end").value;
 
-      orsClient = new OpenRouteService.Client({ key: '5b3ce3597851110001cf624890270b75be3144bea8764bf3d5915a6b' }); // Replace 'YOUR_API_KEY' with your actual API key
+      orsClient = new OpenRouteService.Client({ key: 5b3ce3597851110001cf624890270b75be3144bea8764bf3d5915a6b }); // Replace 'YOUR_API_KEY' with your actual API key
 
       var waypoints = givenAddresses.map(function (address) {
         return { lat: null, lon: null, name: address };
@@ -132,6 +135,34 @@
         li.appendChild(document.createTextNode((i + 1) + ". " + routeOrder[i]));
         ol.appendChild(li);
       }
+    }
+
+    function suggestAddresses(input) {
+      clearSuggestions("addressSuggestions");
+
+      if (input.trim() !== "") {
+        orsClient.geocode({ text: input })
+          .then(function (data) {
+            displaySuggestions("addressSuggestions", data.features);
+          })
+          .catch(function (error) {
+            console.error('Error fetching address suggestions:', error);
+          });
+      }
+    }
+
+    function displaySuggestions(ulId, suggestions) {
+      var ul = document.getElementById(ulId);
+      suggestions.forEach(function (suggestion) {
+        var li = document.createElement("li");
+        li.appendChild(document.createTextNode(suggestion.properties.label));
+        ul.appendChild(li);
+      });
+    }
+
+    function clearSuggestions(ulId) {
+      var ul = document.getElementById(ulId);
+      ul.innerHTML = "";
     }
   </script>
 </body>
