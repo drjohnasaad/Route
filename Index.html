@@ -54,7 +54,7 @@
   </style>
 </head>
 <body>
-  <h1>st Mary Pharmacy Delivery Routes</h1>
+  <h1>Address List & Routing</h1>
   
   <div>
     <label for="address">Type an address below:</label>
@@ -78,6 +78,7 @@
 
   <div id="routeInfo"></div>
 
+  <script src="https://maps.openrouteservice.org/assets/js/ors-js-client.js?key=5b3ce3597851110001cf624890270b75be3144bea8764bf3d5915a6b"></script>
   <script>
     var givenAddresses = [];
     var orsClient;
@@ -97,7 +98,7 @@
       var start = document.getElementById("start").value;
       var end = document.getElementById("end").value;
 
-      orsClient = new OpenRouteService.Client({ key: '5b3ce3597851110001cf624890270b75be3144bea8764bf3d5915a6b' }); // Replace 'YOUR_API_KEY' with your actual API key
+      orsClient = new OpenRouteService.Client({ key: '5b3ce3597851110001cf624890270b75be3144bea8764bf3d5915a6b' });
 
       var waypoints = givenAddresses.map(function (address) {
         return { lat: null, lon: null, name: address };
@@ -140,7 +141,7 @@
       clearSuggestions("addressSuggestions");
 
       if (input.trim() !== "") {
-        orsClient = new OpenRouteService.Client({ key: 'YOUR_API_KEY' }); // Replace 'YOUR_API_KEY' with your actual API key
+        orsClient = new OpenRouteService.Client({ key: '5b3ce3597851110001cf624890270b75be3144bea8764bf3d5915a6b' });
 
         orsClient.geocode({ text: input })
           .then(function (data) {
